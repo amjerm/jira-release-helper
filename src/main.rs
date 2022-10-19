@@ -5,7 +5,6 @@ fn main() {
 
     let tickets: Vec<String> = process_repository(&laravel_path);
 
-    for ticket in tickets {
-        println!("Ticket is: {}", ticket)
-    }
+    println!("laravel tickets");
+    println!("{}", tickets.join(","));
 }
