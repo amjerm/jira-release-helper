@@ -16,11 +16,11 @@ _TBD_
 
 Add a file named `Config.toml` in a directory named `jira-release-helper` in the traditional config directory for your operating system (as defined by the [dirs](https://docs.rs/dirs/latest/dirs/fn.config_dir.html) Rust crate).
 
-| *Platform*  | *Value*                               | *Example*                                 |
-|-------------|---------------------------------------|-------------------------------------------|
-| Linux       | `$XDG_CONFIG_HOME` or `$HOME`/.config | /home/alice/.config                       |
-| macOS       | `$HOME`/Library/Application Support   | /Users/Alice/Library/Application Support  |
-| Windows     | `{FOLDERID_RoamingAppData}`           | C:\Users\Alice\AppData\Roaming            |
+| **Platform**| **Value**                                                             | **Example**                                                               |
+|-------------|-----------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Linux       | `$XDG_CONFIG_HOME` or `$HOME`/.config/jira-release-helper/Config.toml | /home/alice/.config/jirea-release-helper/Config.toml                      |
+| macOS       | `$HOME`/Library/Application Support/jira-release-helper/Config.toml   | /Users/Alice/Library/Application Support/jira-release-helper/Config.toml  |
+| Windows     | `{FOLDERID_RoamingAppData}`/jira-release-helper/Config.toml           | C:\Users\Alice\AppData\Roaming/jira-release-helper/Config.toml            |
 
 The file should contain an array of repositories to check written in toml.
 
