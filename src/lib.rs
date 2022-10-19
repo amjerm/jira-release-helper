@@ -23,8 +23,7 @@ fn get_git_log() -> String {
         .arg("--oneline");
 
     let command_result = log_command.output().expect("git log output failed").stdout;
-    let log_result: String = String::from_utf8(command_result).unwrap();
-    log_result
+    String::from_utf8(command_result).unwrap()
 }
 
 fn parse_tickets(string: String) -> Vec<String> {
@@ -38,4 +37,17 @@ fn parse_tickets(string: String) -> Vec<String> {
 
     tickets.dedup();
     tickets
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_tickets() {
+        let mock_git_log =
+            String::from("feat(something): do a thing (TI-123)\nfix: repair another (IG-123)");
+        let expected: Vec<String> = [String::from("TI-123"), String::from("IG-123")].to_vec();
+        assert_eq!(parse_tickets(mock_git_log), expected);
+    }
 }
