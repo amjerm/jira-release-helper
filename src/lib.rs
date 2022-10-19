@@ -3,13 +3,28 @@ use std::env;
 use std::path::Path;
 use std::process::Command;
 
-pub fn process_repository(repository_path: &str) -> Vec<String> {
+#[derive(Clone)]
+pub struct Repository {
+    pub label: String,
+    pub location: String,
+}
+
+impl Repository {
+    pub fn new(label: String, location: String) -> Self {
+        Self { label, location }
+    }
+}
+
+pub fn process_repository(repo: Repository) -> Vec<String> {
+    let repository_path = repo.location;
     // change the working directory
     let repo_path = Path::new(&repository_path);
     assert!(env::set_current_dir(&repo_path).is_ok());
 
     let git_log: String = get_git_log();
     let tickets: Vec<String> = parse_tickets(git_log);
+    println!("{} Tickets:", repo.label);
+    println!("{}", tickets.join(","));
     tickets
 }
 
