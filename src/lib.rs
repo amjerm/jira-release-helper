@@ -7,11 +7,16 @@ use std::process::Command;
 pub struct Repository {
     pub label: String,
     pub location: String,
+    pub release_branch: String,
 }
 
 impl Repository {
-    pub fn new(label: String, location: String) -> Self {
-        Self { label, location }
+    pub fn new(label: String, location: String, release_branch: String) -> Self {
+        Self {
+            label,
+            location,
+            release_branch,
+        }
     }
 }
 
@@ -21,18 +26,18 @@ pub fn process_repository(repo: Repository) -> Vec<String> {
     let repo_path = Path::new(&repository_path);
     assert!(env::set_current_dir(&repo_path).is_ok());
 
-    let git_log: String = get_git_log();
+    let git_log: String = get_git_log(repo.release_branch);
     let tickets: Vec<String> = parse_tickets(git_log);
     println!("{} Tickets:", repo.label);
     println!("{}", tickets.join(","));
     tickets
 }
 
-fn get_git_log() -> String {
+fn get_git_log(release_branch: String) -> String {
     let mut log_command = Command::new("git");
     log_command
         .arg("log")
-        .arg("origin/release")
+        .arg(format!("origin/{}", &release_branch))
         .arg("--not")
         .arg("origin/HEAD")
         .arg("--oneline");

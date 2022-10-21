@@ -26,9 +26,18 @@ fn main() {
 
     for repository in repositories {
         println!("");
+
+        let mut release_branch = "release".to_string();
+
+        match repository.get("release_branch") {
+            Some(b) => release_branch = b.to_string(),
+            None => {}
+        }
+
         process_repository(Repository::new(
             repository.get("label").unwrap().to_string(),
             repository.get("location").unwrap().to_string(),
+            release_branch,
         ));
     }
 }
