@@ -37,6 +37,7 @@ fn main() {
         process_repository(Repository::new(
             repository.get("label").unwrap().to_string(),
             repository.get("location").unwrap().to_string(),
+            repository.get("project_key").unwrap().to_string(),
             release_branch,
         ));
     }

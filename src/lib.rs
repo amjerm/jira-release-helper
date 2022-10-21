@@ -7,14 +7,21 @@ use std::process::Command;
 pub struct Repository {
     pub label: String,
     pub location: String,
+    pub project_key: String,
     pub release_branch: String,
 }
 
 impl Repository {
-    pub fn new(label: String, location: String, release_branch: String) -> Self {
+    pub fn new(
+        label: String,
+        location: String,
+        project_key: String,
+        release_branch: String,
+    ) -> Self {
         Self {
             label,
             location,
+            project_key,
             release_branch,
         }
     }
@@ -27,7 +34,7 @@ pub fn process_repository(repo: Repository) -> Vec<String> {
     assert!(env::set_current_dir(&repo_path).is_ok());
 
     let git_log: String = get_git_log(repo.release_branch);
-    let tickets: Vec<String> = parse_tickets(git_log);
+    let tickets: Vec<String> = parse_tickets(repo.project_key, git_log);
     println!("{} Tickets:", repo.label);
     println!("{}", tickets.join(","));
     tickets
@@ -46,11 +53,9 @@ fn get_git_log(release_branch: String) -> String {
     String::from_utf8(command_result).unwrap()
 }
 
-fn parse_tickets(string: String) -> Vec<String> {
-    let re = Regex::new(r"(TI|IG)-\d*").unwrap();
-    // replace with tests
-    assert!(re.is_match("TI-123"));
-    assert!(re.is_match("IG-123"));
+fn parse_tickets(project_key: String, string: String) -> Vec<String> {
+    let formatted_re_str = format!(r"{}-\d*", project_key);
+    let re = Regex::new(formatted_re_str.as_str()).unwrap();
 
     let ticket_matches = re.find_iter(&string);
     let mut tickets: Vec<String> = ticket_matches.map(|x| String::from(x.as_str())).collect();
@@ -66,8 +71,8 @@ mod tests {
     #[test]
     fn test_parse_tickets() {
         let mock_git_log =
-            String::from("feat(something): do a thing (TI-123)\nfix: repair another (IG-123)");
-        let expected: Vec<String> = [String::from("TI-123"), String::from("IG-123")].to_vec();
-        assert_eq!(parse_tickets(mock_git_log), expected);
+            String::from("feat(something): do a thing (TI-123)\nfix: repair another (TI-124)");
+        let expected: Vec<String> = [String::from("TI-123"), String::from("TI-124")].to_vec();
+        assert_eq!(parse_tickets("TI".to_string(), mock_git_log), expected);
     }
 }

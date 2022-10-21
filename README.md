@@ -30,12 +30,22 @@ Example:
 [[repositories]]
 label = "First Repository"
 location = "/Users/amjerm/code/first-repo"
+project_key = "TI"
+release_branch = "custom-branch-name"
 
 [[repositories]]
 label = "Second"
 location = "/Users/amjerm/code/second"
+project_key = "TI"
 
 [[repositories]]
 label = "Another"
 location = "/Users/amjerm/code/another-repo"
+project_key = "TI"
 ```
+
+**Fields**
+`label` - Name to use for the repository in output
+`location` - Path to the repository
+`project_key` - Jira project key (i.e. "TI" if your tickets are "TI-123")
+`release_branch` (optional) - Override default release branch name to check for tickets (default: "release")
