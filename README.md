@@ -45,7 +45,11 @@ project_key = "TI"
 ```
 
 **Fields**
+
 `label` - Name to use for the repository in output
+
 `location` - Path to the repository
+
 `project_key` - Jira project key (i.e. "TI" if your tickets are "TI-123")
+
 `release_branch` (optional) - Override default release branch name to check for tickets (default: "release")
