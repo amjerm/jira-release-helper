@@ -1,4 +1,5 @@
 use regex::Regex;
+use std::collections::HashMap;
 use std::env;
 use std::path::Path;
 use std::process::Command;
@@ -24,6 +25,34 @@ impl Repository {
             project_key,
             release_branch,
         }
+    }
+}
+
+pub struct Arguments {
+    pub repo_list: HashMap<String, bool>,
+}
+
+impl Arguments {
+    pub fn new(args: &[String]) -> Self {
+        let mut repo_list: HashMap<String, bool> = HashMap::new();
+
+        let arguments = args.clone();
+        for (i, argument) in args.iter().enumerate() {
+            match argument.as_str() {
+                "-l" | "--list" => match arguments.get(i + 1) {
+                    Some(value) => value.split(',').for_each(|i| {
+                        repo_list.insert(i.to_string(), true);
+                    }),
+                    None => {
+                        println!("No value provided for argument {}", argument);
+                        std::process::exit(1);
+                    }
+                },
+                _ => (),
+            }
+        }
+
+        Self { repo_list }
     }
 }
 

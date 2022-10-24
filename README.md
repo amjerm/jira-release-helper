@@ -53,3 +53,13 @@ project_key = "TI"
 `project_key` - Jira project key (i.e. "TI" if your tickets are "TI-123")
 
 `release_branch` (optional) - Override default release branch name to check for tickets (default: "release")
+
+## Usage
+
+```bash
+# Run all repositories in the config file
+./jira_release_helper
+
+# Run specific repositories
+./jira_release_helper --list First\ Repository,Another
+```

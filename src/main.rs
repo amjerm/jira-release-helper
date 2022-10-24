@@ -1,10 +1,15 @@
 use config::Config;
 use dirs;
-use jira_release_helper::{process_repository, Repository};
+use jira_release_helper::{process_repository, Arguments, Repository};
 use std::collections::HashMap;
+use std::env;
 use std::process;
 
 fn main() {
+    let args: Vec<String> = env::args().skip(1).collect();
+    let arguments = Arguments::new(&args);
+    let all_repos = arguments.repo_list.is_empty();
+
     let config_buffer = dirs::config_dir()
         .unwrap()
         .join("jira-release-helper/Config.toml");
@@ -27,21 +32,34 @@ fn main() {
     let mut all_tickets: Vec<String> = vec![];
 
     for repository in repositories {
-        let mut release_branch = "release".to_string();
+        let label = repository.get("label").unwrap().to_string();
+        let mut is_included = false;
 
-        match repository.get("release_branch") {
-            Some(b) => release_branch = b.to_string(),
+        // run repository if found in flags
+        match arguments.repo_list.get(&label) {
+            Some(_) => {
+                is_included = true;
+            }
             None => {}
+        };
+
+        if all_repos == true || is_included {
+            let mut release_branch = "release".to_string();
+
+            match repository.get("release_branch") {
+                Some(b) => release_branch = b.to_string(),
+                None => {}
+            }
+
+            let mut tickets = process_repository(Repository::new(
+                label,
+                repository.get("location").unwrap().to_string(),
+                repository.get("project_key").unwrap().to_string(),
+                release_branch,
+            ));
+
+            all_tickets.append(&mut tickets);
         }
-
-        let mut tickets = process_repository(Repository::new(
-            repository.get("label").unwrap().to_string(),
-            repository.get("location").unwrap().to_string(),
-            repository.get("project_key").unwrap().to_string(),
-            release_branch,
-        ));
-
-        all_tickets.append(&mut tickets);
     }
 
     all_tickets.sort();
