@@ -24,9 +24,9 @@ fn main() {
         .get::<Vec<HashMap<String, String>>>("repositories")
         .unwrap();
 
-    for repository in repositories {
-        println!("");
+    let mut all_tickets: Vec<String> = vec![];
 
+    for repository in repositories {
         let mut release_branch = "release".to_string();
 
         match repository.get("release_branch") {
@@ -34,11 +34,19 @@ fn main() {
             None => {}
         }
 
-        process_repository(Repository::new(
+        let mut tickets = process_repository(Repository::new(
             repository.get("label").unwrap().to_string(),
             repository.get("location").unwrap().to_string(),
             repository.get("project_key").unwrap().to_string(),
             release_branch,
         ));
+
+        all_tickets.append(&mut tickets);
     }
+
+    all_tickets.sort();
+    all_tickets.dedup();
+
+    println!("\nAll Tickets:");
+    println!("{}", all_tickets.join(","));
 }

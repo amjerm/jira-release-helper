@@ -34,8 +34,12 @@ pub fn process_repository(repo: Repository) -> Vec<String> {
     assert!(env::set_current_dir(&repo_path).is_ok());
 
     let git_log: String = get_git_log(repo.release_branch);
-    let tickets: Vec<String> = parse_tickets(repo.project_key, git_log);
-    println!("{} Tickets:", repo.label);
+    let mut tickets: Vec<String> = parse_tickets(repo.project_key, git_log);
+
+    tickets.sort();
+    tickets.dedup();
+
+    println!("\n{} Tickets:", repo.label);
     println!("{}", tickets.join(","));
     tickets
 }
