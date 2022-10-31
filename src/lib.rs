@@ -48,6 +48,11 @@ impl Arguments {
                         std::process::exit(1);
                     }
                 },
+                "-h" | "--help" => {
+                    println!("\nThis command has only one optional flag:\n");
+                    println!("\t-l|--list\tThe list of repositories to run (by label)\n");
+                    std::process::exit(0)
+                }
                 _ => (),
             }
         }
