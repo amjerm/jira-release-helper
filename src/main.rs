@@ -3,61 +3,69 @@ use dirs;
 use jira_release_helper::{process_repository, Arguments, Repository};
 use std::collections::HashMap;
 use std::env;
-use std::process;
 
 fn main() {
+    // parse arguments
     let args: Vec<String> = env::args().skip(1).collect();
     let arguments = Arguments::new(&args);
+
+    // run all repositories if no --list flag is used
     let all_repos = arguments.repo_list.is_empty();
 
+    // establish buffer to read config file
     let config_buffer = dirs::config_dir()
         .unwrap()
         .join("jira-release-helper/Config.toml");
 
-    let settings = match Config::builder()
+    // read settings from config file
+    let settings = Config::builder()
         .add_source(config::File::from(config_buffer))
         .build()
-    {
-        Ok(config_obj) => config_obj,
-        Err(err) => {
-            println!("Error loading config file: {:?}", err);
-            process::exit(1);
-        }
-    };
+        .expect("Unable to read config file");
 
+    // read repositories array from settings
     let repositories = settings
         .get::<Vec<HashMap<String, String>>>("repositories")
-        .unwrap();
+        .expect("Error parsing config file");
 
     let mut all_tickets: Vec<String> = vec![];
 
     for repository in repositories {
-        let label = repository.get("label").unwrap().to_string();
+        let label = repository
+            .get("label")
+            .expect("All repositories must have a label")
+            .to_string();
         let mut is_included = false;
 
         // run repository if found in flags
-        match arguments.repo_list.get(&label) {
-            Some(_) => {
-                is_included = true;
-            }
-            None => {}
+        if let Some(_) = arguments.repo_list.get(&label) {
+            is_included = true;
         };
 
         if all_repos == true || is_included {
-            let mut release_branch = "release".to_string();
+            // set default release branch name
+            let mut release_branch = String::from("release");
 
-            match repository.get("release_branch") {
-                Some(b) => release_branch = b.to_string(),
-                None => {}
-            }
+            // use custom release branch name if set
+            if let Some(b) = repository.get("release_branch") {
+                release_branch = b.to_string();
+            };
 
+            // get tickets for repository
             let mut tickets = process_repository(Repository::new(
                 label,
-                repository.get("location").unwrap().to_string(),
-                repository.get("project_key").unwrap().to_string(),
+                repository
+                    .get("location")
+                    .expect("All repositories must have a location")
+                    .to_string(),
+                repository
+                    .get("project_key")
+                    .expect("All repositories must have a project_key")
+                    .to_string(),
                 release_branch,
             ));
 
+            // append tickets to full ticket list
             all_tickets.append(&mut tickets);
         }
     }

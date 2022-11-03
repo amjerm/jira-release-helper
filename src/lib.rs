@@ -63,6 +63,7 @@ impl Arguments {
 
 pub fn process_repository(repo: Repository) -> Vec<String> {
     let repository_path = repo.location;
+
     // change the working directory
     let repo_path = Path::new(&repository_path);
     assert!(env::set_current_dir(&repo_path).is_ok());
