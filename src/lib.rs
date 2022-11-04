@@ -80,6 +80,10 @@ pub fn process_repository(repo: Repository) -> Vec<String> {
 }
 
 fn get_git_log(release_branch: String) -> String {
+    let mut fetch_command = Command::new("git");
+    fetch_command.arg("fetch").arg("--all");
+    fetch_command.output().expect("git fetch failed");
+
     let mut log_command = Command::new("git");
     log_command
         .arg("log")
