@@ -14,13 +14,8 @@ fn main() {
 
     // establish buffer to read config file
     let mut config_buffer = dirs::config_dir().unwrap();
-
-    println!("OS is {}", env::consts::OS);
-
-    match env::consts::OS {
-        "windows" => config_buffer.push("jira-release-helper\\Config.toml"),
-        _ => config_buffer.push("jira-release-helper/Config.toml"),
-    };
+    config_buffer.push("jira-release-helper");
+    config_buffer.push("Config.toml");
 
     // read settings from config file
     let settings = Config::builder()
