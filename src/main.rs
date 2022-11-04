@@ -13,9 +13,9 @@ fn main() {
     let all_repos = arguments.repo_list.is_empty();
 
     // establish buffer to read config file
-    let config_buffer = dirs::config_dir()
-        .unwrap()
-        .join("jira-release-helper/Config.toml");
+    let mut config_buffer = dirs::config_dir().unwrap();
+    config_buffer.push("jira-release-helper");
+    config_buffer.push("Config.toml");
 
     // read settings from config file
     let settings = Config::builder()
