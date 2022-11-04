@@ -85,19 +85,21 @@ fn get_git_log(release_branch: String) -> String {
         .arg("log")
         .arg(format!("origin/{}", &release_branch))
         .arg("--not")
-        .arg("origin/HEAD")
-        .arg("--oneline");
+        .arg("origin/HEAD");
 
     let command_result = log_command.output().expect("git log output failed").stdout;
     String::from_utf8(command_result).unwrap()
 }
 
 fn parse_tickets(project_key: String, string: String) -> Vec<String> {
-    let formatted_re_str = format!(r"{}-\d*", project_key);
+    let formatted_re_str = format!(r"{}-\d*", project_key.to_lowercase());
     let re = Regex::new(formatted_re_str.as_str()).unwrap();
 
-    let ticket_matches = re.find_iter(&string);
-    let mut tickets: Vec<String> = ticket_matches.map(|x| String::from(x.as_str())).collect();
+    let normalized_log = &string.to_lowercase();
+    let ticket_matches = re.find_iter(normalized_log);
+    let mut tickets: Vec<String> = ticket_matches
+        .map(|x| String::from(x.as_str().to_uppercase()))
+        .collect();
 
     tickets.dedup();
     tickets
@@ -110,7 +112,7 @@ mod tests {
     #[test]
     fn test_parse_tickets() {
         let mock_git_log =
-            String::from("feat(something): do a thing (TI-123)\nfix: repair another (TI-124)");
+            String::from("feat(something): do a thing (ti-123)\nfix: repair another (TI-124)");
         let expected: Vec<String> = [String::from("TI-123"), String::from("TI-124")].to_vec();
         assert_eq!(parse_tickets("TI".to_string(), mock_git_log), expected);
     }
