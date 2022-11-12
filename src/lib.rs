@@ -39,15 +39,13 @@ impl Arguments {
         let arguments = args.clone();
         for (i, argument) in args.iter().enumerate() {
             match argument.as_str() {
-                "-l" | "--list" => match arguments.get(i + 1) {
-                    Some(value) => value.split(',').for_each(|i| {
+                "-l" | "--list" => arguments
+                    .get(i + 1)
+                    .expect("No value provided for argument!")
+                    .split(',')
+                    .for_each(|i| {
                         repo_list.insert(i.to_string(), true);
                     }),
-                    None => {
-                        println!("No value provided for argument {}", argument);
-                        std::process::exit(1);
-                    }
-                },
                 "-h" | "--help" => {
                     println!("\nThis command has only one optional flag:\n");
                     println!("\t-l|--list\tThe list of repositories to run (by label)\n");
